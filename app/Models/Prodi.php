@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Lumen\Auth\Authorizable;
 
-class ProdisModel extends Model implements AuthenticatableContract, AuthorizableContract
+class Prodi extends Model implements AuthenticatableContract, AuthorizableContract
 {
     use Authenticatable, Authorizable, HasFactory;
 
@@ -26,7 +26,7 @@ class ProdisModel extends Model implements AuthenticatableContract, Authorizable
 
     public function mahasiswas()
     {
-        return $this->hasMany(MahasiswasModel::class, 'prodiID');
+        return $this->hasMany(Mahasiswa::class, 'prodiID');
     }
 
     /**

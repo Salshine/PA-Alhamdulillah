@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MahasiswasModel;
-use App\Models\MatkulsModel;
-use App\Models\ProdisModel;
+use App\Models\Mahasiswa;
+use App\Models\Matkul;
+use App\Models\Prodi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -27,21 +27,28 @@ class AuthController extends Controller
         $nama = $request->nama;
         $angkatan = $request->angkatan;
         $password = Hash::make($request->password);
-        // $prodi = ?????????
+        $prodiId = $request->prodiId;
 
-        $mahasiswas = MahasiswasModel::create([
+        $mahasiswas = Mahasiswa::create([
             'nim' => $nim,
             'nama' => $nama,
             'angkatan' => $angkatan,
-            'password' => $password
+            'password' => $password,
+            'prodiId' => $prodiId
         ]);
-
-        return response()->json([
-            'status' => 'Sukses',
-            'data' => [
-                'mahasiswa' => $mahasiswas,
-            ]
-        ]);
+        if ($mahasiswas) {
+            return response()->json([
+                'status' => 'Sukses',
+                'data' => [
+                    'mahasiswa' => $mahasiswas,
+                ]
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'Gagal',
+                'message' => "Gagal menambahkan mahasiswa"
+            ]);
+        }
     }
 
 
@@ -51,7 +58,7 @@ class AuthController extends Controller
         $nim = $request->nim;
         $password = $request->password;
 
-        $mahasiswas = MahasiswasModel::where('nim', $nim)->first();
+        $mahasiswas = Mahasiswa::where('nim', $nim)->first();
 
         if (!$mahasiswas) {
             return response()->json([
@@ -70,36 +77,41 @@ class AuthController extends Controller
         $mahasiswas->token = Str::random(36); //
         $mahasiswas->save();
 
+        // $mahasiswas->update(['token' => Str::random(36)]);
 
         return response()->json([
             'status' => 'Success',
-            'data' => [
-                'mahasiswa' => $mahasiswas,
-            ]
+            'data' => $mahasiswas
         ], 200);
     }
 
     public function getMahasiswas()
     {
-        $mahasiswas = MahasiswasModel::all();
+        $mahasiswas = Mahasiswa::with('prodis')->get();
 
-        return response()->json([
-            'status' => 'Success',
-            'message' => 'all users grabbed',
-            'data' => [
-                'users' => $mahasiswas,
-            ]
-        ], 200);
+        if ($mahasiswas) {
+            return response()->json([
+                'status' => 'Success',
+                'message' => 'all users grabbed',
+                'mahasiswa' => $mahasiswas
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'Gagal',
+                'message' => 'gagal mengambil data mahasiswa'
+            ], 400);
+        }
     }
 
 
-    public function getMahasiswasByToken(Request $request)
+    public function getMahasiswaByToken(Request $request)
     {
-        // $mahasiswas = $request->user;
-
+        $user = $request->user;
+        // echo $user;
         return response()->json([
             'status' => 'Success',
-            'message' => 'selamat datang ' . $mahasiswas->nama,
+            'message' => 'selamat datang ' . $user->nama,
+            'mahasiswa' => $user
         ], 200);
     }
 
@@ -107,38 +119,68 @@ class AuthController extends Controller
     {
         $nim = $request->nim;
 
-        $mahasiswas = MahasiswasModel::where('nim', $nim)->first();
+        $mahasiswas = Mahasiswa::where('nim', $nim)->first();
+        $mahasiswas->matkuls;
 
         return response()->json([
             'status' => 'Success',
-            'data' => [
-                'mahasiswa' => $mahasiswas,
-            ]
+            'mahasiswa' => $mahasiswas,
         ], 200);
     }
 
-    public function getProdis()
-    {
-        $prodis = ProdisModel::all();
 
-        return response()->json([
-            'status' => 'Success',
-            'data' => [
-                'users' => $prodis,
-            ]
-        ], 200);
-    }
 
     public function getMatkuls()
     {
-        $matkuls = MatkulsModel::all();
+        $matkuls = Matkul::all();
 
         return response()->json([
             'status' => 'Success',
-            'data' => [
-                'users' => $matkuls,
-            ]
+            'matakuliah' => $matkuls
         ], 200);
     }
-    //
+    public function storeMatakuliah(Request $request)
+    {
+        if ($request->user->nim == $request->nim) {
+            $nim = $request->nim;
+            $matakuliahId = $request->matakuliahId;
+
+            $mahasiswa = Mahasiswa::where('nim', $nim)->first();
+            $mahasiswa->matkuls()->attach($matakuliahId);
+            $mahasiswa->matkuls;
+
+            return response()->json([
+                'status' => 'Success',
+                'message' => 'Sukses menambahkan matakuliah',
+                'data' => $mahasiswa
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'Error',
+                'message' => 'Belum authorization'
+            ], 400);
+        }
+    }
+    public function deleteMatakuliah(Request $request)
+    {
+        if ($request->user->nim == $request->nim) {
+            $nim = $request->nim;
+            $matakuliahId = $request->matakuliahId;
+
+            $mahasiswa = Mahasiswa::where('nim', $nim)->first();
+            $mahasiswa->matkuls()->detach($matakuliahId);
+            $mahasiswa->matkuls;
+
+            return response()->json([
+                'status' => 'Success',
+                'message' => 'Sukses menghapus matakuliah',
+                'data' => $mahasiswa
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'Error',
+                'message' => 'Belum authorization'
+            ], 400);
+        }
+    }
 }

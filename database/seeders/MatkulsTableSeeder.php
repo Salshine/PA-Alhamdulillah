@@ -14,7 +14,7 @@ class MatkulsTableSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\MatkulsModel::create([
+        \App\Models\Matkul::create([
             'id' => [1, 2, 3, 4, 5],
             'matkul' => ['Pemrograman Dasar', 'Pemrograman Lanjut', 'Algoritma dan Struktur Data', 'Sistem Basis Data', 'Jaringan Komputer Dasar']
         ]);
