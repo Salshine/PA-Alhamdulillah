@@ -8,12 +8,14 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Lumen\Auth\Authorizable;
+use App\Models\Prodi;
+use App\Models\Matkul;
 
-class MahasiswasModel extends Model implements AuthenticatableContract, AuthorizableContract
+class Mahasiswa extends Model implements AuthenticatableContract, AuthorizableContract
 {
     use Authenticatable, Authorizable, HasFactory;
 
-    protected $primarykey = 'nim';
+    protected $primarykey = 'id';
 
     /**
      * The attributes that are mass assignable.
@@ -21,17 +23,17 @@ class MahasiswasModel extends Model implements AuthenticatableContract, Authoriz
      * @var string[]
      */
     protected $fillable = [
-        'nim', 'nama', 'angkatan', 'password', 'token', 'prodiID',
+        'nim', 'nama', 'angkatan', 'password', 'token', 'prodiId',
     ];
 
     public function prodis()
     {
-        return $this->belongsTo(ProdisModel::class, 'prodiId');
+        return $this->belongsTo(Prodi::class, 'prodiId');
     }
 
     public function matkuls()
     {
-        return $this->belongsToMany(MatkulsModel::class, 'mahasiswas_matkuls', 'mahasiswaNim', 'matkulId');
+        return $this->belongsToMany(Matkul::class, 'mahasiswas_matkuls', 'mahasiswaNim', 'matkulId');
     }
 
     /**

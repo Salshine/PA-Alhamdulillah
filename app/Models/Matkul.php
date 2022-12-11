@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Lumen\Auth\Authorizable;
 
-class MatkulsModel extends Model implements AuthenticatableContract, AuthorizableContract
+class Matkul extends Model implements AuthenticatableContract, AuthorizableContract
 {
     use Authenticatable, Authorizable, HasFactory;
 
@@ -20,12 +20,12 @@ class MatkulsModel extends Model implements AuthenticatableContract, Authorizabl
      * @var string[]
      */
     protected $fillable = [
-        'id', 'matkul',
+        'matkul',
     ];
 
     public function mahasiswas()
     {
-        return $this->belongsToMany(MahasiswasModel::class, 'mahasiswas_matkuls', 'mahasiswaNim', 'matkulId');
+        return $this->belongsToMany(Mahasiswa::class, 'mahasiswas_matkuls', 'mahasiswaNim', 'matkulId');
     }
 
     /**

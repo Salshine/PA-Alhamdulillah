@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\MahasiswasModel;
+use App\Models\Mahasiswa;
 use Closure;
 
 class Authorization
@@ -19,19 +19,20 @@ class Authorization
         $token = $request->header('token') ?? $request->query('token');
         if (!$token) {
             return response()->json([
-                'status' => 'Error',
+                'status' => '400',
                 'message' => 'token not provided',
             ], 400);
         }
 
-        $mahasiswas = MahasiswasModel::where('token', $token)->first();
+        $mahasiswas = Mahasiswa::where('token', $token)->first();
         if (!$mahasiswas) {
             return response()->json([
-                'status' => 'Error',
+                'status' => '400',
                 'message' => 'invalid token',
             ], 400);
         }
-        // $request->user = $mahasiswas;
-        return $next($request);
+        // echo $mahasiswas;
+        $request->user = $mahasiswas;
+        return $next($request->user);
     }
 }
