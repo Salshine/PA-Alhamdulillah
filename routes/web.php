@@ -34,5 +34,5 @@ $router->group(['prefix' => 'mahasiswa'], function () use ($router) {
     $router->put('/{nim}/matakuliah/{matakuliahId}', ['middleware' => 'auth', 'uses' => 'AuthController@deleteMatakuliah']);
 });
 
-$router->get('/prodi', ['uses' => 'AuthController@getProdis']);
+$router->get('/prodi', ['uses' => 'ProdiController@getProdis']);
 $router->get('/matakuliah', ['uses' => 'AuthController@getMatkuls']);
