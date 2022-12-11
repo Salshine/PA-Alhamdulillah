@@ -28,5 +28,7 @@ $router->group(['prefix' => 'mahasiswa'], function () use ($router) {
     $router->get('/{nim}', ['uses' => 'AuthController@getMahasiswas']);
 });
 
-$router->get('/prodi', ['uses ' => 'AuthController@getProdis']);
-$router->get('/matakuliah', ['uses ' => 'AuthController@getMatkuls']);
+
+
+$router->get('/prodi', ['uses' => 'AuthController@getProdis']);
+$router->get('/matakuliah', ['uses' => 'AuthController@getMatkuls']);
